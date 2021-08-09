@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 import com.example.searchviewsample.R
+import com.example.searchviewsample.databinding.ActivityMainBinding
 import com.example.searchviewsample.utils.getQueryTextChangeStateFlow
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -26,10 +27,12 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
 
     private lateinit var job: Job
 
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         job = Job()
         setUpSearchStateFlow()
 
