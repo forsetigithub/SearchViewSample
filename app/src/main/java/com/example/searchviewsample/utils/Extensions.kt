@@ -10,12 +10,12 @@ fun SearchView.getQueryTextChangeStateFlow(): StateFlow<String> {
 
     setOnQueryTextListener(object : SearchView.OnQueryTextListener {
         override fun onQueryTextSubmit(query: String): Boolean {
-            return true
+            return false
         }
 
         override fun onQueryTextChange(newText: String): Boolean {
             query.value = newText
-            return true
+            return false
         }
     })
 
