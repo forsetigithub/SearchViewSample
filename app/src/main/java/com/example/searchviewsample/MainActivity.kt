@@ -1,5 +1,6 @@
 package com.example.searchviewsample
 
+import android.content.res.AssetManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -26,13 +27,11 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
     private lateinit var job: Job
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         job = Job()
         setUpSearchStateFlow()
-
 
 //
 //        val searcher = findViewById<SearchView>(R.id.search)
@@ -53,11 +52,12 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
 
         launch {
             search.getQueryTextChangeStateFlow()
-                .debounce(300)
+                .debounce(500)
                 .filter { query ->
                     return@filter !query.isEmpty()
-                }.distinctUntilChanged()
-                .flatMapConcat { query ->
+                }
+                .distinctUntilChanged()
+                .flatMapLatest { query ->
                     getDataFromText(query)
                         .catch {
                             emitAll(flowOf(""))
@@ -65,13 +65,16 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
                 }
                 .flowOn(Dispatchers.Default)
                 .collect { result ->
-                    var adapter = ArrayAdapter (
+                    val searcher:SearchApi = SearchRepository(assets)
+                    val resultList = searcher.performSearch(result)
+
+                    val adapter = ArrayAdapter (
                         this@MainActivity,
                         android.R.layout.simple_list_item_1,
-                        ereaList.filter { s -> s.contains(result) }
+                        resultList
                     )
-                    Log.i("getQueryTextChangeStateFlow",
-                        ereaList.filter { s -> s.contains(result) }.count().toString())
+                    Log.i("getQueryTextChangeStateFlow",result)
+                    Log.i("getQueryTextChangeStateFlow",resultList.count().toString())
                     listView.adapter = adapter
 
                 }
@@ -87,6 +90,7 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
     }
 
     companion object {
+
         val ereaList = listOf<String>(
             "北海道",
             "青森県",
