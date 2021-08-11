@@ -4,10 +4,10 @@ package com.example.searchviewsample
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import com.example.searchviewsample.databinding.ActivityMainBinding
 import com.example.searchviewsample.utils.getQueryTextChangeStateFlow
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         job = Job()
+
+        binding.progressBar.visibility = ProgressBar.INVISIBLE
         setUpSearchStateFlow()
 
     }
@@ -50,6 +52,7 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
                 }
                 .flowOn(Dispatchers.Default)
                 .collect { result ->
+                    binding.progressBar.visibility = ProgressBar.VISIBLE
                     val searcher:SearchApi = SearchRepository(assets)
                     val resultList = searcher.performSearch(result)
 
@@ -61,6 +64,8 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
                     Log.i("getQueryTextChangeStateFlow",result)
                     Log.i("getQueryTextChangeStateFlow",resultList.count().toString())
                     binding.listView.adapter = adapter
+
+                    binding.progressBar.visibility = ProgressBar.INVISIBLE
 
                 }
         }
